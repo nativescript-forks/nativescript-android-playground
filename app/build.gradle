@@ -1,0 +1,42 @@
+//apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.3"
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 24
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.parse.bolts:bolts-tasks:1.4.0'
+    compile 'com.github.tamir7.contacts:contacts:1.1.1'
+    compile 'me.everything:providers-android:1.0.1'
+}
+
+// task to delete the old jar
+task deleteOldJar(type: Delete) {
+    delete '../release/com.roblav96.nativescriptplayground.jar'
+}
+// task to export contents as jar
+task EXPORTJAR(type: Copy) {
+    from('build/intermediates/bundles/release/')
+    into('../')
+    include('classes.jar')
+    // name the plugin
+    rename('classes.jar','com.roblav96.nativescriptplayground.jar')
+}
+EXPORTJAR.dependsOn(deleteOldJar, build)
