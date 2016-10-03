@@ -59,9 +59,10 @@ public class Threads {
                     cursor.close();
                 }
 
-                String sendi = new Gson().toJson(sendMe);
-                Log.e(TAG, "sendi > " + sendi);
-                return sendi;
+                // String sendi = new Gson().toJson(sendMe);
+                // Log.e(TAG, "sendi > " + sendi);
+                // return sendi;
+                return new Gson().toJson(sendMe);
             }
         });
     }
@@ -75,9 +76,10 @@ public class Threads {
             @Override
             public String call() throws Exception {
                 ContactsProvider contactsProvider = new ContactsProvider(context);
-                String sendi = new Gson().toJson(contactsProvider.getContacts().getList());
-                Log.e(TAG, "sendi > " + sendi);
-                return sendi;
+                // String sendi = new Gson().toJson(contactsProvider.getContacts().getList());
+                // Log.e(TAG, "sendi > " + sendi);
+                // return sendi;
+                return new Gson().toJson(contactsProvider.getContacts().getList());
             }
         });
     }
