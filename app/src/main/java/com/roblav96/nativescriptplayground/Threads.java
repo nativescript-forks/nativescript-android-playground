@@ -16,8 +16,6 @@ import io.requery.android.database.sqlite.SQLiteDatabase;
 import io.requery.android.database.sqlite.SQLiteStatement;
 import me.everything.providers.android.contacts.ContactsProvider;
 
-import static android.R.attr.value;
-
 /**
  * Created by roblav96 on 10/1/16.
  */
@@ -42,7 +40,7 @@ public class Threads {
                 Gson gson = new Gson();
 //                ArrayList<SQLiteStatement> statements = gson.fromJson(_statements, ArrayList<SQLiteStatement.class>);
 
-                Log.e(TAG, "db > " + gson.toJson(db));
+//                Log.e(TAG, "db > " + gson.toJson(db));
                 Log.e(TAG, "inputStatements > " + inputStatements);
 
                 InputSQLiteStatement<?>[] statements = gson.fromJson(inputStatements, InputSQLiteStatement[].class);
@@ -56,8 +54,12 @@ public class Threads {
                     for (int i = 0; i < statement.values.length; i++) {
                         if (statement.values[i] instanceof String) {
                             compiled.bindString(i + 1, statement.values[i].toString());
-                        } else if (statement.values[i] instanceof Number) {
+                        } else if (statement.values[i] instanceof Long) {
+                            compiled.bindLong(i + 1, Long.parseLong(statement.values[i].toString()));
+                        } else if (statement.values[i] instanceof Double) {
                             compiled.bindDouble(i + 1, Double.parseDouble(statement.values[i].toString()));
+                        } else {
+                            compiled.bindNull(i + 1);
                         }
                     }
                     compiled.execute();
