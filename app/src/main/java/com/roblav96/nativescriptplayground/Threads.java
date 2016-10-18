@@ -27,8 +27,8 @@ public class Threads {
 
 
     private class InputSQLiteStatement<T> {
-        public String query;
-        public T[] values;
+        private String query;
+        private T[] values;
     }
 
     public static Task<Boolean> sqlWriteAsync(
@@ -75,46 +75,22 @@ public class Threads {
         });
     }
 
-    public static Task<Boolean> sqlReadAsync(
+    public static Task<Cursor[]> sqlReadAsync(
             final SQLiteDatabase db,
             final String inputStatements
     ) {
-        return Task.callInBackground(new Callable<Boolean>() {
+        return Task.callInBackground(new Callable<Cursor[]>() {
             @Override
-            public Boolean call() throws Exception {
+            public Cursor[] call() throws Exception {
                 Gson gson = new Gson();
-//                ArrayList<SQLiteStatement> statements = gson.fromJson(_statements, ArrayList<SQLiteStatement.class>);
-
-//                Log.e(TAG, "db > " + gson.toJson(db));
-//                Log.e(TAG, "inputStatements > " + inputStatements);
-
                 InputSQLiteStatement<?>[] statements = gson.fromJson(inputStatements, InputSQLiteStatement[].class);
-//                Log.e(TAG, "statements.length > " + statements.length);
 
-                Cursor[] cursors = [];
-
+                ArrayList<Cursor> cursors = new ArrayList<>();
                 for (InputSQLiteStatement statement : statements) {
-//                    Log.e(TAG, "statement > " + gson.toJson(statement));
-                    SQLiteStatement compiled = db.compileStatement(statement.query);
-                    for (int i = 0; i < statement.values.length; i++) {
-                        if (statement.values[i] instanceof String) {
-                            compiled.bindString(i + 1, statement.values[i].toString());
-//                        } else if (statement.values[i] instanceof Long) {
-//                            compiled.bindLong(i + 1, Long.parseLong(statement.values[i].toString()));
-                        } else if (statement.values[i] instanceof Double) {
-                            compiled.bindDouble(i + 1, Double.parseDouble(statement.values[i].toString()));
-                        } else {
-                            compiled.bindNull(i + 1);
-                        }
-                    }
-                    compiled.execute();
-                    compiled.clearBindings();
+                    cursors.add(db.rawQuery(statement.query, statement.values));
                 }
 
-                db.setTransactionSuccessful();
-                db.endTransaction();
-
-                return true;
+                return cursors.toArray(new Cursor[0]);
             }
         });
     }
