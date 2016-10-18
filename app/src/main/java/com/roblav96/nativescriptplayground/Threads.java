@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -15,39 +16,49 @@ import io.requery.android.database.sqlite.SQLiteDatabase;
 import io.requery.android.database.sqlite.SQLiteStatement;
 import me.everything.providers.android.contacts.ContactsProvider;
 
+import static android.R.attr.value;
+
 /**
  * Created by roblav96 on 10/1/16.
  */
 
 
 
-class InputSQLiteStatement {
-    public String query;
-    public String[] values;
-}
-
 public class Threads {
     private static final String TAG = "roblav96";
 
-
+    private class InputSQLiteStatement<T> {
+        public String query;
+        public T[] values;
+    }
 
     public static Task<Boolean> sqlWriteAsync(
             final SQLiteDatabase db,
-            final InputSQLiteStatement[] statements
-            ) {
+            final String inputStatements
+    ) {
         return Task.callInBackground(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-//                Gson gson = new Gson();
+                Gson gson = new Gson();
 //                ArrayList<SQLiteStatement> statements = gson.fromJson(_statements, ArrayList<SQLiteStatement.class>);
+
+                Log.e(TAG, "db > " + gson.toJson(db));
+                Log.e(TAG, "inputStatements > " + inputStatements);
+
+                InputSQLiteStatement<?>[] statements = gson.fromJson(inputStatements, InputSQLiteStatement[].class);
+                Log.e(TAG, "statements.length > " + statements.length);
 
                 db.beginTransactionNonExclusive();
 
-                for (int i = 0; i < statements.length; i++) {
-                    InputSQLiteStatement statement = statements[i];
+                for (InputSQLiteStatement statement : statements) {
+                    Log.e(TAG, "statement > " + gson.toJson(statement));
                     SQLiteStatement compiled = db.compileStatement(statement.query);
-                    for (int ii = 0; ii < statement.values.length; ii++) {
-                        compiled.bindString(ii+1,statement.values[ii]);
+                    for (int i = 0; i < statement.values.length; i++) {
+                        if (statement.values[i] instanceof String) {
+                            compiled.bindString(i + 1, statement.values[i].toString());
+                        } else if (statement.values[i] instanceof Number) {
+                            compiled.bindDouble(i + 1, Double.parseDouble(statement.values[i].toString()));
+                        }
                     }
                     compiled.execute();
                     compiled.clearBindings();
