@@ -4,15 +4,21 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tuenti.smsradar.Sms;
 import com.tuenti.smsradar.SmsListener;
 import com.tuenti.smsradar.SmsRadar;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -27,6 +33,7 @@ import okhttp3.Response;
 
 public class MySmsRader {
     private static final String TAG = "roblav96";
+
 
 
     private String _url;
@@ -49,13 +56,11 @@ public class MySmsRader {
         SmsRadar.initializeSmsRadarService(context, new SmsListener() {
             @Override
             public void onSmsSent(Sms sms) {
-//                Log.e(TAG, "onSmsSent > sms > " + sms);
-                sendSms(sms);
+                _sendSms(sms);
             }
             @Override
             public void onSmsReceived(Sms sms) {
-//                Log.e(TAG, "onSmsReceived > sms > " + sms);
-                sendSms(sms);
+                _sendSms(sms);
             }
         });
     }
@@ -64,7 +69,7 @@ public class MySmsRader {
         SmsRadar.stopSmsRadarService(context);
     }
 
-    private void sendSms(Sms _sms) {
+    private void _sendSms(Sms _sms) {
         Gson gson = new Gson();
         final String sms = gson.toJson(_sms);
 
@@ -74,25 +79,24 @@ public class MySmsRader {
         }
         sendi.add(sms);
 
-        Log.e(TAG, "sendSms > _failed > " + _failed.toString());
-        Log.e(TAG, "sendSms > sendi > " + sendi.toString());
+        Request.Builder builder = new Request.Builder();
+        builder.url(_url);
+        builder.post(RequestBody.create(JSON, gson.toJson(sendi)));
 
-        Request request = new Request.Builder()
-        .url(_url)
-        .post(RequestBody.create(JSON, gson.toJson(sendi)))
-        .build();
+        Type type = new TypeToken<Map<String, String>>(){}.getType();
+        Map<String, String> headers = gson.fromJson(_headers, type);
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            builder.addHeader(entry.getKey(), entry.getValue());
+        }
 
-        _client.newCall(request).enqueue(new Callback() {
+        _client.newCall(builder.build()).enqueue(new Callback() {
             @Override public void onFailure(Call call, IOException e) {
                 _failed.add(sms);
             }
             @Override public void onResponse(Call call, Response response) throws IOException {
-                Log.e(TAG, "onResponse > isSuccessful > " + response.isSuccessful());
-                Log.e(TAG, "onResponse > code > " + response.code());
                 if (response.isSuccessful()) {
                     _failed.clear();
                 } else {
-                    Log.e(TAG, "onResponse > _failed > " + _failed.toString());
                     _failed.add(sms);
                 }
             }
