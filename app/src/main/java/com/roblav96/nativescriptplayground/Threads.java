@@ -30,24 +30,6 @@ public class Threads {
 
 
 
-    public static void initSMS(
-            final Context context
-    ) {
-        SmsRadar.initializeSmsRadarService(context, new SmsListener() {
-            @Override
-            public void onSmsSent(Sms sms) {
-                Log.e(TAG, "onSmsSent > sms > " + sms);
-            }
-
-            @Override
-            public void onSmsReceived(Sms sms) {
-                Log.e(TAG, "onSmsReceived > sms > " + sms);
-            }
-        });
-    }
-
-
-
     private class InputSQLiteStatement<T> {
         private String query;
         private T[] values;
