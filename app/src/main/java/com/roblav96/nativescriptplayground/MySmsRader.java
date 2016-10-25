@@ -4,18 +4,12 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.tuenti.smsradar.Sms;
 import com.tuenti.smsradar.SmsListener;
 import com.tuenti.smsradar.SmsRadar;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -74,8 +68,14 @@ public class MySmsRader {
         Gson gson = new Gson();
         final String sms = gson.toJson(_sms);
 
-        ArrayList<String> sendi = _failed;
+        ArrayList<String> sendi = new ArrayList<>();
+        for (int i = 0; i < _failed.size(); i++) {
+            sendi.add(_failed.get(i));
+        }
         sendi.add(sms);
+
+        Log.e(TAG, "sendSms > _failed > " + _failed.toString());
+        Log.e(TAG, "sendSms > sendi > " + sendi.toString());
 
         Request request = new Request.Builder()
         .url(_url)
@@ -92,6 +92,7 @@ public class MySmsRader {
                 if (response.isSuccessful()) {
                     _failed.clear();
                 } else {
+                    Log.e(TAG, "onResponse > _failed > " + _failed.toString());
                     _failed.add(sms);
                 }
             }
