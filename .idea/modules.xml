@@ -3,11 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../../../../../OSXHD/Projects/nativescript-android-playground/app/app.iml" filepath="$PROJECT_DIR$/../../../../../OSXHD/Projects/nativescript-android-playground/app/app.iml" />
-      <module fileurl="file:///../OSXHD/Projects/nativescript-android-playground/app/app.iml" filepath="/../OSXHD/Projects/nativescript-android-playground/app/app.iml" />
-      <module fileurl="file:///../OSXHD/Projects/nativescript-android-playground/app/app.iml" filepath="/../OSXHD/Projects/nativescript-android-playground/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../../../../OSXHD/Projects/nativescript-android-playground/nativescript-android-playground.iml" filepath="$PROJECT_DIR$/../../../../../OSXHD/Projects/nativescript-android-playground/nativescript-android-playground.iml" />
-      <module fileurl="file:///../OSXHD/Projects/nativescript-android-playground/nativescript-android-playground.iml" filepath="/../OSXHD/Projects/nativescript-android-playground/nativescript-android-playground.iml" />
-      <module fileurl="file:///../OSXHD/Projects/nativescript-android-playground/nativescript-android-playground.iml" filepath="/../OSXHD/Projects/nativescript-android-playground/nativescript-android-playground.iml" />
     </modules>
   </component>
 </project>
