@@ -25,6 +25,7 @@ dependencies {
     compile 'com.parse.bolts:bolts-tasks:1.4.0'
     compile 'me.everything:providers-android:1.0.1'
     compile 'io.requery:sqlite-android:3.15.0'
+    compile 'com.tuenti.smsradar:library:1.0.4'
 }
 
 // task to delete the old jar

@@ -4,8 +4,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.gson.Gson;
+import com.tuenti.smsradar.Sms;
+import com.tuenti.smsradar.SmsListener;
+import com.tuenti.smsradar.SmsRadar;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -23,6 +27,24 @@ import me.everything.providers.android.contacts.ContactsProvider;
 
 public class Threads {
     private static final String TAG = "roblav96";
+
+
+
+    public static void initSMS(
+            final Context context
+    ) {
+        SmsRadar.initializeSmsRadarService(context, new SmsListener() {
+            @Override
+            public void onSmsSent(Sms sms) {
+                Log.e(TAG, "onSmsSent > sms > " + sms);
+            }
+
+            @Override
+            public void onSmsReceived(Sms sms) {
+                Log.e(TAG, "onSmsReceived > sms > " + sms);
+            }
+        });
+    }
 
 
 
