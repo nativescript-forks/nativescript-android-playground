@@ -1,17 +1,13 @@
 package com.roblav96.nativescriptplayground;
 
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
-import android.provider.Telephony;
 import android.util.Log;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.tuenti.smsradar.Sms;
 import com.tuenti.smsradar.SmsListener;
 import com.tuenti.smsradar.SmsRadar;
-import com.tuenti.smsradar.SmsRadarService;
 
 /**
  * Created by roblav96 on 10/25/16.
@@ -24,14 +20,12 @@ public class MySmsRader {
 
 
 
-    boolean started = false;
+    private Context _context;
 
-    void startSmsRadar(
-            final Context context
+    public MySmsRader(
+            Context context
     ) {
-        if (started) {
-            return;
-        }
+        _context = context;
 
         SmsRadar.initializeSmsRadarService(context, new SmsListener() {
             @Override
@@ -47,17 +41,12 @@ public class MySmsRader {
         });
     }
 
-    void stopSmsRadar(
-            final Context context
-    ) {
-        if (!started) {
-            return;
-        }
-        SmsRadar.stopSmsRadarService(context);
+    public void stopService() {
+        SmsRadar.stopSmsRadarService(_context);
     }
 
     private void onSms(Sms sms) {
-        RequestQueue queue = Volley.newRequestQueue(this)
+        RequestQueue queue = Volley.newRequestQueue(this);
     }
 
 
