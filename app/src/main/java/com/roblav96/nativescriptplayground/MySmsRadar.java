@@ -10,6 +10,7 @@ import com.tuenti.smsradar.SmsListener;
 import com.tuenti.smsradar.SmsRadar;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,19 +32,20 @@ import okhttp3.Response;
 
 
 
-public class MySmsRader {
-    private static final String TAG = "roblav96";
+public class MySmsRadar {
+    private static final String TAG = "SANDBOX";
 
 
 
     private String _url;
     private ArrayList<String> _failed;
     private String _headers;
+    private ArrayList<String> _unames;
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private OkHttpClient _client;
 
-    public MySmsRader(
+    public MySmsRadar(
             Context context,
             String ip,
             String headers
@@ -52,6 +54,7 @@ public class MySmsRader {
         _headers = headers;
         _failed = new ArrayList<>();
         _client = new OkHttpClient();
+        _unames = new ArrayList<>();
 
         SmsRadar.initializeSmsRadarService(context, new SmsListener() {
             @Override
@@ -69,9 +72,60 @@ public class MySmsRader {
         SmsRadar.stopSmsRadarService(context);
     }
 
+    public void setUnames(String[] unames) {
+//        Log.d(TAG, "setUnames > unames > " + unames.toString());
+        this._unames.clear();
+        for (int i = 0; i < unames.length; i++) {
+            this._unames.add(unames[i]);
+        }
+//        Log.d(TAG, "setUnames > this._unames > " + this._unames.toString());
+    }
+
+    public void addUname(String uname) {
+//        Log.d(TAG, "addUname > uname > " + uname);
+        uname = uname.replaceAll("[^0-9]", "");
+        uname = "1" + uname.substring(uname.length() - 10);
+//        Log.d(TAG, "add > uname > " + uname);
+        this._unames.add(uname.toString());
+    }
+
+    public void removeUname(String uname) {
+        uname = uname.replaceAll("[^0-9]", "");
+        uname = "1" + uname.substring(uname.length() - 10);
+        for (int i = 0; i < this._unames.size(); i++) {
+            if (this._unames.get(i) == uname) {
+                this._unames.remove(i);
+                break;
+            }
+        }
+    }
+
+    private class SmsItem {
+        private String uname;
+        private String body;
+        private String date;
+        private String type;
+    }
+
     private void _sendSms(Sms _sms) {
+        SmsItem item = new SmsItem();
+        item.uname = _sms.getAddress();
+        item.uname = item.uname.replaceAll("[^0-9]", "");
+        item.uname = "1" + item.uname.substring(item.uname.length() - 10);
+        item.body = _sms.getMsg();
+        item.date = _sms.getDate();
+        item.type = _sms.getType().toString();
+
+//        Log.d(TAG, "_sendSms > item > " + item.toString());
+//        Log.d(TAG, "_sendSms > this._unames > " + this._unames.toString());
+//        Log.d(TAG, "_sendSms > contains > " + this._unames.contains(item.uname));
+
+        if (!this._unames.contains(item.uname)) {
+            return;
+        }
+
         Gson gson = new Gson();
-        final String sms = gson.toJson(_sms);
+        final String sms = gson.toJson(item);
 
         ArrayList<String> sendi = new ArrayList<>();
         for (int i = 0; i < _failed.size(); i++) {
