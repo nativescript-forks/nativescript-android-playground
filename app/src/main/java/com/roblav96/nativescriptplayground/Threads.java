@@ -1,10 +1,12 @@
 package com.roblav96.nativescriptplayground;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.support.v4.app.NotificationCompat;
 
 import com.google.gson.Gson;
 import com.tuenti.smsradar.Sms;
@@ -27,6 +29,28 @@ import me.everything.providers.android.contacts.ContactsProvider;
 
 public class Threads {
     private static final String TAG = "roblav96";
+
+
+
+    public static Task<NotificationCompat.Builder> getNotificationBuilder(
+            final Activity activity,
+            final int icon,
+            final String title,
+            final String content,
+            final boolean ongoing
+    ) {
+        return Task.callInBackground(new Callable<NotificationCompat.Builder>() {
+            @Override
+            public NotificationCompat.Builder call() throws Exception {
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(activity);
+                builder.setSmallIcon(icon);
+                builder.setContentTitle(title);
+                builder.setContentText(content);
+                builder.setOngoing(ongoing);
+                return builder;
+            }
+        });
+    }
 
 
 
